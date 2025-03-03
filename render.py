@@ -39,6 +39,7 @@ def render_set(model_path, name, iteration, views, gaussians, pipeline, backgrou
     ref_color_path = os.path.join(model_path, name, "ours_{}".format(iteration), "ref_color")
     trans_color_path = os.path.join(model_path, name, "ours_{}".format(iteration), "trans_color")
     comp_ref_color_path = os.path.join(model_path, name, "ours_{}".format(iteration), "comp_ref_color")
+    comp_trans_color_path = os.path.join(model_path, name, "ours_{}".format(iteration), "comp_trans_color")
     depth_path = os.path.join(model_path, name, "ours_{}".format(iteration), "depth")
 
     makedirs(render_path, exist_ok=True)
@@ -47,6 +48,7 @@ def render_set(model_path, name, iteration, views, gaussians, pipeline, backgrou
     makedirs(ref_color_path, exist_ok=True)
     makedirs(trans_color_path, exist_ok=True)
     makedirs(comp_ref_color_path, exist_ok=True)
+    makedirs(comp_trans_color_path, exist_ok=True)
     makedirs(depth_path, exist_ok=True)
     t_list = []
     for idx, view in enumerate(tqdm(views, desc="Rendering progress")):
@@ -60,8 +62,9 @@ def render_set(model_path, name, iteration, views, gaussians, pipeline, backgrou
         ref_color = rendering["ref_color"]
         trans_color = rendering["trans_color"]
         comp_ref_color = ref_map * ref_color
+        comp_trans_color = (1- ref_map) * trans_color
         depth = rendering["depth"]
-        depth = depth / depth.max()
+        # depth = depth / depth.max()
 
         gt = view.original_image[0:3, :, :]
 
@@ -75,6 +78,7 @@ def render_set(model_path, name, iteration, views, gaussians, pipeline, backgrou
         torchvision.utils.save_image(ref_color, os.path.join(ref_color_path, '{0:05d}'.format(idx) + ".png"))
         torchvision.utils.save_image(trans_color, os.path.join(trans_color_path, '{0:05d}'.format(idx) + ".png"))
         torchvision.utils.save_image(comp_ref_color, os.path.join(comp_ref_color_path, '{0:05d}'.format(idx) + ".png"))
+        torchvision.utils.save_image(comp_trans_color, os.path.join(comp_trans_color_path, '{0:05d}'.format(idx) + ".png"))
         torchvision.utils.save_image(depth, os.path.join(depth_path, '{0:05d}'.format(idx) + ".png"))
     t = np.array(t_list)
     fps = 1.0 / t.mean()

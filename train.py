@@ -121,7 +121,7 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
         trans_color = render_pkg["trans_color"]
         # print(ref_map)
         image_python = ref_map * ref_color + (1 - ref_map) * trans_color
-
+        trans_image = trans_color
         if viewpoint_cam.alpha_mask is not None:
             alpha_mask = viewpoint_cam.alpha_mask.cuda()
             image *= alpha_mask
@@ -131,14 +131,14 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
         clean_image = viewpoint_cam.clean_image.cuda()
 
         # Ll1 = l1_loss(image, gt_image)
-        Ll1 = w1 * l1_loss(image_python, gt_image) + w2 * l1_loss(trans_color, clean_image) * 10
+        Ll1 = w1 * l1_loss(image_python, gt_image) + w2 * l1_loss(trans_image, clean_image) * 10
         
         if FUSED_SSIM_AVAILABLE:
             ssim_value1 = fused_ssim(image.unsqueeze(0), gt_image.unsqueeze(0))
-            ssim_value2 = fused_ssim(trans_color.unsqueeze(0), clean_image.unsqueeze(0))
+            ssim_value2 = fused_ssim(trans_image.unsqueeze(0), clean_image.unsqueeze(0))
         else:
             ssim_value1 = ssim(image, gt_image)
-            ssim_value2 = ssim(trans_color, clean_image)
+            ssim_value2 = ssim(trans_image, clean_image)
         SSIM = w1 * (torch.tensor(1.0) - ssim_value1) + w2 *(torch.tensor(1.0)- ssim_value2) * 10
         
         # loss = (1.0 - opt.lambda_dssim) * Ll1 + opt.lambda_dssim * (1.0 - ssim_value)
@@ -146,8 +146,8 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
         
         init_loss = torch.zeros(1)
         if iteration < 1000:
-            init_loss = l2_loss(trans_color, clean_image) * 0.01 * 10
-            # init_loss = l2_loss(trans_color, gt_image) * 0.01
+            init_loss = l2_loss(trans_image, clean_image) * 0.01 * 10
+            # init_loss = l2_loss(trans_image, gt_image) * 0.01
             loss += init_loss
 
         smooth_loss_func = SmoothnessLoss(opt)
@@ -161,7 +161,7 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
         out_depth = render_pkg['depth']
         depth_smooth_loss_func = EdgePreservingSmoothnessLoss(opt)
         # depth_smooth_loss = depth_smooth_loss_func(out_depth.view(-1, H, W), gt_image.contiguous().view(-1, H, W, 3))
-        depth_smooth_loss = depth_smooth_loss_func(out_depth.view(-1, H, W), trans_color.contiguous().view(-1, H, W, 3))
+        depth_smooth_loss = depth_smooth_loss_func(out_depth.view(-1, H, W), trans_image.contiguous().view(-1, H, W, 3))
         depth_smooth_loss *= 0.001
         # print(f"Iteration {iteration}: depth smooth loss: {depth_smooth_loss.item():.4f}")
         loss += depth_smooth_loss
