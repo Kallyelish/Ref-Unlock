@@ -121,7 +121,7 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
         trans_color = render_pkg["trans_color"]
         # print(ref_map)
         image_python = ref_map * ref_color + (1 - ref_map) * trans_color
-        trans_image = trans_color
+        trans_image = (1 - ref_map) * trans_color
         if viewpoint_cam.alpha_mask is not None:
             alpha_mask = viewpoint_cam.alpha_mask.cuda()
             image *= alpha_mask
