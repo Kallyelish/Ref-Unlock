@@ -247,4 +247,7 @@ To generate them please do the following:
    ```
    python test_sirs.py --inet dsrnet_l_nature --model dsrnet_model_sirs --dataset sirs_dataset  --name dsrnet_l_4000_test --hyper --if_align --resume --weight_path "./weights/dsrnet_l_4000_epoch33.pt" --base_dir "[YOUR_DATA_DIR]"
    ```
-
+### Visual Results on RFFR and ShinyBlender
+![rffr](images/rffr_cmp.png)
+![details](images/rffr_cmp_detail.png)
+![shiny](images/shiny_cmp.png)
