@@ -12,6 +12,69 @@ Abstract: *Accurately rendering scenes with reflective surfaces remains a signif
 The environment setup can follow that of [3DGS](https://github.com/graphdeco-inria/gaussian-splatting).  
 For submodules such as **Depth Anything V2** and the **Reflection Removal Model (RRM)**, please refer to their respective environment configurations as provided in their original repositories.
 
+### Dataset Structure
+For the **RFFR** dataset, please arrange the directory structure as follows:
+```
+<location>
+|---images
+|   |---<image 0>
+|   |---<image 1>
+|   |---...
+|---clean images
+|   |---<image 0>
+|   |---<image 1>
+|   |---...
+|---depth
+|   |---<image 0>
+|   |---<image 1>
+|   |---...
+|---sparse
+    |---0
+        |---cameras.bin
+        |---images.bin
+        |---points3D.bin
+|---train.txt
+|---val.txt
+```
+For the **ShinyBlender** dataset, please arrange the directory structure as follows:
+
+- Under the `images`, `clean images`, and `depth` folders, create separate subdirectories for `train` and `test`.
+
+- Instead of the `sparse` folder, use `transforms_train.json` and `transforms_test.json`.
+
+Example layout:
+```
+<location>
+|---images
+|   |---train
+|       |---<image 0>
+|       |---<image 1>
+|       |---...
+|   |---test
+|       |---<image 0>
+|       |---<image 1>
+|       |---...
+|---clean images
+|   |---train
+|       |---<image 0>
+|       |---<image 1>
+|       |---...
+|   |---test
+|       |---<image 0>
+|       |---<image 1>
+|       |---...
+|---depth
+|   |---train
+|       |---<image 0>
+|       |---<image 1>
+|       |---...
+|   |---test
+|       |---<image 0>
+|       |---<image 1>
+|       |---...
+|---transforms_train.json
+|---transforms_test.json
+```
 
 ### Running
 
@@ -251,3 +314,4 @@ To generate them please do the following:
 ![rffr](images/rffr_cmp.png)
 ![details](images/rffr_cmp_detail.png)
 ![shiny](images/shiny_cmp.png)
+
